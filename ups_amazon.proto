@@ -1,0 +1,262 @@
+syntax = "proto2";
+
+//Basic Function
+///////////////////////////////////////////////////////////////////////
+///  AtoU_1: ask UPS which worldid(s) to connect when first connected
+///////////////////////////////////////////////////////////////////////
+message AInitialWorldid {
+    required int64 seqnum = 1;
+}
+message UInitialWorldid {
+    repeated int64 worldid = 1;
+    required int64 seqnum = 2;
+}
+
+///////////////////////////////////////////////
+///  AtoU_2: requires a truck for a warehouse
+///////////////////////////////////////////////
+
+message AmazonProduct{
+    required int64 productid = 1;
+    required string description = 2;
+    required int32 count = 3;
+}
+
+message AGetTruck {
+    required int32 whid = 1;
+    required int64 packageid = 2;
+    required string uAccountName = 3;
+    required int32 x = 4;
+    required int32 y = 5;
+    repeated AmazonProduct product = 6;
+    required int64 seqnum = 7;
+    required int64 worldid = 8;
+}
+
+message UAccountResult {
+    required int64 packageid = 1;
+    required bool uAccountExists = 2;
+    required string uAccountName = 3;
+    required int64 uAccountid = 4;
+    required int64 seqnum = 5;
+}
+
+message UTruckReady {
+    required int32 truckid = 1;
+    required int64 packageid = 2;
+    required int64 seqnum = 3;
+}
+
+///////////////////////////////////////
+/// AtoU_3: truck is loaded, go deliver.
+///////////////////////////////////////
+
+message ADeliver {
+    required int32 truckid = 1;
+    required int64 seqnum = 3; 
+    required int64 worldid = 4;
+}
+
+
+//////////////////////////////////////////////////////////////
+/// AtoU_4: associtate an Amazon account with an UPS account
+//////////////////////////////////////////////////////////////
+message AAccountConnection {
+    required int64 aAccountid = 1;
+    required string uAccountName = 2;
+    required int64 worldid = 3;
+    required int64 seqnum = 4;
+}
+message UAccountConnectionResult {
+    required bool uAccountExists = 1;
+    required int64 uAccountid = 2;
+    required int64 seqnum = 3;
+}
+
+
+//Extra Feature
+////////////////////////////////////////////////////////
+/// UtoA_2: inform Amazon that I'm going to disconnect
+////////////////////////////////////////////////////////
+message UDisconnect{
+    required int64 seqnum = 1; 
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+/// UtoA_3: inform Amazon that I'm going to disconnect from some connected world(s)
+////////////////////////////////////////////////////////////////////////////////////
+message UDisconnectWorld {
+    repeated int64 worldid = 1;
+    required int64 seqnum = 2;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+/// UtoA_4: inform Amazon that I'm going to connect to some connected world(s)
+////////////////////////////////////////////////////////////////////////////////////
+message UConnectWorld {
+    repeated int64 worldid = 1;
+    required int64 seqnum = 2;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// UtoA_5: ask which package ids are inside an amazon account (which is connected with a ups account)
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+message UAccountPackageQuery {
+    required int64 aAccountid = 1;
+    required int64 uAccountid = 2;
+    required int64 worldid = 3;
+    required int64 seqnum = 4;
+}
+message AAccountPackageDetail {
+    repeated int64 packageid = 1;
+    required int64 worldid = 2;
+    required int64 seqnum = 3;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
+/// UtoA_6: Disconnect one UPS account with one or more connected Amazon account(s)
+////////////////////////////////////////////////////////////////////////////////////
+message UDisconnectAccount {
+    repeated int64 aAccountid = 1;
+    required int64 uAccountid = 2;
+    required int64 worldid = 3;
+    required int64 seqnum = 4;
+}
+
+/////////////////////////////////////////////////////////////////////////
+/// UtoA_7: Disconnect one UPS account with one or more connected package(s)
+/////////////////////////////////////////////////////////////////////////
+message UDisconnectPackage {
+    repeated int64 packageid = 1;
+    required int64 uAccountid = 2;
+    required int64 worldid = 3;
+    required int64 seqnum = 4;
+}
+
+
+////////////////////////////////////////////////////
+/// AtoU_4: inform UPS that I'm going to disconnect
+////////////////////////////////////////////////////
+message ADisconnect{
+    required int64 seqnum = 1; 
+}
+
+/////////////////////////////////////////////////////////////
+/// AtoU_5: inform UPS to connect to some existing world(s)
+/////////////////////////////////////////////////////////////
+message AConnectWorld {
+    repeated int64 worldid = 1;
+    required int64 seqnum = 2;
+}
+
+///////////////////////////////////////////////////////////////
+/// AtoU_6: request a summary of currently-available world ids
+///////////////////////////////////////////////////////////////
+message AWorldidSummaryQuery {
+    required int64 seqnum = 1;
+}
+message UWorldidSummaryReply {
+    repeated int64 worldid = 1;
+    required int64 seqnum = 2;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+/// AtoU_7: inform UPS that I'm going to disconnect from the following world(s)
+/////////////////////////////////////////////////////////////////////////////////
+message ADisconnectWorld {
+    repeated int64 worldid = 1;
+    required int64 seqnum = 2;
+}
+
+////////////////////////////////////////////////////////
+/// AtoU_8: inform UPS to make an amount of new world(s)
+////////////////////////////////////////////////////////
+message AMakeWorld {
+    required int64 amount = 1;
+    required int64 seqnum = 2;
+}
+message UMadeWorld {
+    repeated int64 worldid = 1; // newly-created world ids
+    required int64 seqnum = 2;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+/// AtoU_11: disconnect an Amazon account with one or more connected UPS account(s)
+////////////////////////////////////////////////////////////////////////////////////
+message ADisconnectAccount {
+    required int64 aAccountid = 1;
+    repeated int64 uAccountid = 2;
+    required int64 worldid = 3;
+    required int64 seqnum = 4;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/// AtoU_12: disconnect a package with one or more connected UPS account(s)
+/////////////////////////////////////////////////////////////////////////////
+message ADisconnectPackage {
+    required int64 packageid = 1;
+    repeated int64 uAccountid = 2;
+    required int64 worldid = 3;
+    required int64 seqnum = 4;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/// AtoU_13: ask UPS the current coordinate of a package
+/////////////////////////////////////////////////////////////////////////////
+message AWhereIsPackage {
+    required int64 packageid = 1;
+    required int64 worldid = 2;
+    required int64 seqnum = 3;
+}
+message UPackageCoord {
+    required int32 x = 1;
+    required int32 y = 2;
+    required int64 seqnum = 3;
+}
+
+
+
+////////////////////////////////////////
+/// Summary for Commands & Responses
+////////////////////////////////////////
+// UPS's commands
+message UMessages {
+    //Basic Function
+    repeated int64 acks = 1;
+    optional UInitialWorldid initialWorldid = 2;
+    repeated UTruckReady truckReadies = 3;
+    //Query
+    repeated UAccountPackageQuery uAccountPackageQueries = 5;
+    repeated UAccountConnectionResult accountconnectionresult = 6;   
+    //Extra Feature
+    optional UDisconnect disconnect = 8;
+    optional UDisconnectWorld disconnectWorld = 9;
+    optional UConnectWorld connectWorld = 10;
+    repeated UDisconnectAccount disconnectAccounts = 11;
+    repeated UDisconnectPackage disconnectPackages = 12;
+    optional UWorldidSummaryReply worldidSummaryReply = 13;
+    optional UMadeWorld madeWorld = 14;
+    repeated UPackageCoord packageCoords = 15;
+}
+
+// Amazon's responses
+message AMessages {
+    //Basic Function
+    repeated int64 acks = 1;
+    optional AInitialWorldid initialWorldid = 2;
+    repeated AGetTruck getTrucks = 3;  
+    repeated ADeliver delivers = 4;
+    //Query
+    repeated AAccountConnection accountConnections = 6;
+    repeated AAccountPackageDetail aAccountPackageDetails = 8;
+    //Extra Feature
+    optional ADisconnect disconnect = 9;
+    optional AConnectWorld connectWorld = 10;
+    optional AWorldidSummaryQuery worldidSummaryQuery = 11;
+    optional ADisconnectWorld disconnectWorld = 12;
+    optional AMakeWorld makeWorld = 13;
+    repeated ADisconnectAccount disconnectAccounts = 14;
+    repeated ADisconnectPackage disconnectPackages = 15;
+    repeated AWhereIsPackage whereIsPackages = 16;
+}
