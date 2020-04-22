@@ -1,0 +1,89 @@
+syntax = "proto2";
+message AProduct{
+  required int64 id = 1;
+  required string description = 2;
+  required int32 count = 3;
+}
+
+message AInitWarehouse{
+  required int32 id = 1;
+  required int32 x = 2;
+  required int32 y = 3;
+}
+
+message AConnect{
+  optional int64 worldid = 1;
+  repeated AInitWarehouse initwh = 2;
+  required bool isAmazon = 3;
+}
+
+message AConnected{
+  required int64 worldid= 1;
+  required string result = 2;
+}
+
+message APack{
+  required int32 whnum = 1;
+  repeated AProduct things = 2;
+  required int64 shipid = 3;
+  required int64 seqnum = 4;
+}
+message APacked {
+  required int64 shipid = 1;
+  required int64 seqnum = 2;
+}
+
+message ALoaded{
+  required int64 shipid = 1;
+  required int64 seqnum = 2;
+}
+
+message APutOnTruck{
+  required int32 whnum = 1;
+  required int32 truckid = 2;
+  required int64 shipid = 3;
+  required int64 seqnum = 4;
+}
+
+message APurchaseMore{
+  required int32 whnum = 1;
+  repeated AProduct things = 2;
+  required int64 seqnum = 3;
+}
+
+message AErr{
+  required string err = 1;
+  required int64 originseqnum = 2;
+  required int64 seqnum = 3;
+}
+
+message AQuery{
+  required int64 packageid = 1;
+  required int64 seqnum = 2;
+}
+
+message APackage{
+  required int64 packageid =1;
+  required string status = 2;
+  required int64 seqnum = 3;
+}
+
+message ACommands {
+  repeated APurchaseMore buy = 1;
+  repeated APack topack = 2; 
+  repeated APutOnTruck load = 3;
+  repeated AQuery queries = 4;
+  optional uint32 simspeed = 5; 
+  optional bool disconnect = 6;
+  repeated int64 acks =7;
+}
+
+message AResponses {
+  repeated APurchaseMore arrived = 1;
+  repeated APacked ready = 2; 
+  repeated ALoaded loaded = 3; 
+  optional bool finished = 4;
+  repeated AErr error = 5;
+  repeated int64 acks = 6;
+  repeated APackage packagestatus = 7;
+}
