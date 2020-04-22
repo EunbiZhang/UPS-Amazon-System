@@ -1,0 +1,85 @@
+syntax = "proto2";
+message UInitTruck{
+  required int32 id = 1;
+  required int32 x=2;
+  required int32 y=3;
+}
+message UConnect{
+  optional int64 worldid = 1;
+  repeated UInitTruck trucks=2;
+  required bool isAmazon = 3;
+}
+
+message UConnected{
+  required int64 worldid = 1;
+  required string result = 2;
+}
+
+message UGoPickup{
+  required int32 truckid = 1;
+  required int32 whid = 2;
+  required int64 seqnum = 3;
+}
+
+message UFinished{
+  required int32 truckid = 1;
+  required int32 x = 2;
+  required int32 y = 3;
+  required string status = 4;
+  required int64 seqnum = 5;
+}
+
+message UDeliveryMade{
+  required int32 truckid = 1;
+  required int64 packageid = 2;
+  required int64 seqnum = 3;
+}
+
+message UDeliveryLocation{
+  required int64 packageid = 1;
+  required int32 x = 2;
+  required int32 y = 3;
+}
+
+message UGoDeliver{
+  required int32 truckid = 1;
+  repeated UDeliveryLocation packages = 2;
+  required int64 seqnum = 3;
+}
+
+message UErr{
+  required string err = 1;
+  required int64 originseqnum = 2;
+  required int64 seqnum = 3;
+}
+
+message UQuery{
+  required int32 truckid =1; 
+  required int64 seqnum = 2;
+}
+
+message UTruck{
+  required int32 truckid =1;
+  required string status = 2;
+  required int32 x = 3;
+  required int32 y = 4;
+  required int64 seqnum = 5;
+}
+
+message UCommands{
+  repeated UGoPickup pickups = 1;
+  repeated UGoDeliver deliveries = 2;
+  optional uint32 simspeed = 3;
+  optional bool disconnect = 4;
+  repeated UQuery queries = 5;
+  repeated int64 acks = 6;
+}
+
+message UResponses{
+  repeated UFinished completions = 1;
+  repeated UDeliveryMade delivered = 2;
+  optional bool finished = 3;
+  repeated int64 acks = 4;
+  repeated UTruck truckstatus = 5;
+  repeated UErr error = 6;
+}
