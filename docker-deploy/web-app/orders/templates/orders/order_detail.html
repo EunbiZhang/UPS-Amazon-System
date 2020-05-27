@@ -1,0 +1,51 @@
+{% extends "orders/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <article class="media content-section">
+    <!-- <img class="rounded-circle article-img" src="{{ object.uAccount.profile.image.url }}"> -->
+    <div class="media-body">
+      <div class="article-metadata">
+        {% if order.uAccount %}
+          <a class="mr-2" href="{% url 'user-orders' order.uAccount.username %}">{{ order.uAccount }}</a>
+        {% endif %}
+      </div>
+      <h2><a class="article-destination" href="{% url 'order-detail' order.id %}">Package {{order.package_id}}</a></h2>
+      {% if object.uAccount == user %}
+        {% if object.status == 'status1'%}
+          <div>
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'order-update' object.id %}">Update</a>
+          </div>
+        {% endif %}
+        {% if object.status == 'status2'%}
+          <div>
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'order-update' object.id %}">Update</a>
+          </div>
+        {% endif %}
+      {% endif %}
+      <p class="article-note">Destination: x = {{ order.destination_x }},  y = {{ order.destination_y }}</p>
+      <p class="article-note">Status:  {{ order.get_status_display }}</p>
+      <p class="article-note">Truck:   {{ order.truck_id }}</p>
+      <p class="article-metadata">Worldid: {{ order.worldid }}</p>
+      <p class="article-note"></p>
+      <p class="article-note">The package includes following products:</p>
+      {% for num in order.products_num %}{% for name in order.products_description %}
+        {% if forloop.counter == forloop.parentloop.counter %}
+          <p class="article-note">{{name}} : {{num}}</p>
+        {% endif %}
+      {% endfor %}{% endfor %} 
+<!-- 
+      <form method = "POST" enctype = 'multipart/form-data'>
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Profile Info</legend>
+            
+              {{ o_form|crispy }}
+            
+        </fieldset>
+        <div class = "form-group">
+            <button class="btn btn-outline-info" type="submit">Update</button>
+        </div>
+      </form> -->
+    </div>
+  </article>
+{% endblock content %}

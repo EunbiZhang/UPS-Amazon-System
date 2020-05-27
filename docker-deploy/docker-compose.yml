@@ -1,0 +1,49 @@
+version: '2'
+
+services:
+  db:
+      image: postgres
+      volumes:
+            - data-volume:/var/lib/postgresql/data
+      environment:
+            - POSTGRES_HOST_AUTH_METHOD=trust
+  web-init:
+      build: ./web-app
+      command: /code/initserver.sh
+      volumes:
+        - ./web-app:/code
+      depends_on:
+        - db
+  web:
+      build: ./web-app
+      user: nobody
+      command: /code/runserver.sh
+      volumes:
+        - ./web-app:/code
+      expose:
+        - "8000"
+      depends_on:
+        - web-init
+        - db
+  ups:
+      build: ./web-app
+      command: /code/upsrunserver.sh
+      ports:
+        - "5555:5555"
+      volumes:
+        - ./web-app:/code
+      expose:
+        - "5000"
+      depends_on:
+        - web
+        - db
+  nginx:
+     image: nginx:latest
+     ports:
+       - "8000:8000"
+     volumes:
+       - ./nginx/config:/etc/nginx/conf.d
+     depends_on:
+       - web
+volumes:
+   data-volume: 
